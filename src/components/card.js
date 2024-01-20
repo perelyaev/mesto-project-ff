@@ -1,5 +1,5 @@
 // @todo: Экспортируемые функции
-export {createCard, deleteCard, likeCard, imageCard};
+export {createCard, deleteCard, likeCard};
 
 // @todo: Функция создания карточки
 function createCard(template, link, name, callbackDelete, callbackLike, callbackImage) {
@@ -8,12 +8,13 @@ function createCard(template, link, name, callbackDelete, callbackLike, callback
   const cardDeleteButton = cardItem.querySelector('.card__delete-button');
   const cardLikeButton = cardItem.querySelector('.card__like-button');
   const cardImage = cardItem.querySelector('.card__image');
-  cardItem.querySelector('.card__image').src = link;
-  cardItem.querySelector('.card__image').alt = name;
-  cardItem.querySelector('.card__title').textContent = name;
+  const cardTitle = cardItem.querySelector('.card__title');
+  cardImage.src = link;
+  cardImage.alt = name;
+  cardTitle.textContent = name;
   cardDeleteButton.addEventListener('click', () => callbackDelete(card));
   cardLikeButton.addEventListener('click', (evt) => callbackLike(evt));
-  cardImage.addEventListener('click', (evt) => callbackImage(evt));
+  cardImage.addEventListener('click', () => callbackImage(link, name));
   return cardItem;
 };
 
@@ -30,12 +31,3 @@ function likeCard(evt) {
     evt.target.classList.add('card__like-button_is-active');
   };
 };
-
-// @todo: Функция обрабатывающая событие клика по изображению
-function imageCard(evt) {
-  const img = document.querySelector('.popup__image');
-  const caption = document.querySelector('.popup__caption');
-  img.src = evt.target.src;
-  caption.textContent = evt.target.alt;
-};
-
