@@ -20,6 +20,19 @@ const formAdd = document.forms.namedItem('new-place');
 const buttonEdit = document.querySelector('.profile__edit-button');
 const buttonAdd = document.querySelector('.profile__add-button');
 
+formEdit.addEventListener('submit',(evt) => {
+  evt.preventDefault();
+  profileTitle.textContent = formEdit.elements.name.value;
+  profileDescription.textContent = formEdit.elements.description.value;
+});
+
+formAdd.addEventListener('submit',(evt) => {
+  evt.preventDefault();
+  renderCard(formAdd.elements.link.value, formAdd.elements.namedItem('place-name').value)
+  formAdd.reset();
+});
+
+
 // @todo: Функция обрабатывающая событие клика по изображению
 function renderPopupImage(link, name) {
   popupImage.src = link;
@@ -32,18 +45,6 @@ function renderCard(link, name) {
   cardList.prepend(card);
 };
 
-// @todo: Сохранить форму редактирования
-function saveFormEdit() {
-  profileTitle.textContent = formEdit.elements.name.value;
-  profileDescription.textContent = formEdit.elements.description.value;
-}
-
-// @todo: Сохранить форму добавления
-function saveFormAdd() {
-  renderCard(formAdd.elements.link.value, formAdd.elements.namedItem('place-name').value)
-  formAdd.reset();
-}
-
 // @todo: Вывести карточки на страницу
 initialCards.forEach((card) => {
   renderCard(card.link, card.name)
@@ -51,14 +52,14 @@ initialCards.forEach((card) => {
 
 // @todo: Открыть форму редактирования
 buttonEdit.addEventListener('click',() => {
-  openModal(popupTypeEdit,closeModal,saveFormEdit);
+  openModal(popupTypeEdit,closeModal);
   formEdit.elements.name.value = profileTitle.textContent;
   formEdit.elements.description.value = profileDescription.textContent;
 });
 
 // @todo: Открыть форму добавления
 buttonAdd.addEventListener('click',() => {
-  openModal(popupTypeNewCard,closeModal,saveFormAdd);
+  openModal(popupTypeNewCard,closeModal);
 });
 
 // @todo: Открыть форму изображения
