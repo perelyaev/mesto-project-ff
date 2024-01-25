@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import {initialCards} from './cards.js';
 import {createCard, deleteCard, likeCard} from './card.js';
-import {openModal, closeModal} from './modal.js';
+import {openModal, closeModal, handleCloseByClick, handleCloseByEsc} from './modal.js';
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template');
@@ -30,11 +30,11 @@ formAdd.addEventListener('submit',(evt) => {
   evt.preventDefault();
   renderCard(formAdd.elements.link.value, formAdd.elements.namedItem('place-name').value)
   formAdd.reset();
-});
-
+})
 
 // @todo: Функция обрабатывающая событие клика по изображению
 function renderPopupImage(link, name) {
+  openModal(popupTypeImage,handleCloseByClick,handleCloseByEsc)
   popupImage.src = link;
   popupCaption.textContent = name;
 };
@@ -52,18 +52,12 @@ initialCards.forEach((card) => {
 
 // @todo: Открыть форму редактирования
 buttonEdit.addEventListener('click',() => {
-  openModal(popupTypeEdit,closeModal);
+  openModal(popupTypeEdit, handleCloseByClick, handleCloseByEsc);
   formEdit.elements.name.value = profileTitle.textContent;
   formEdit.elements.description.value = profileDescription.textContent;
 });
 
 // @todo: Открыть форму добавления
 buttonAdd.addEventListener('click',() => {
-  openModal(popupTypeNewCard,closeModal);
-});
-
-// @todo: Открыть форму изображения
-document.addEventListener('click',(evt) => {
-  if (evt.target.className === 'card__image')
-  openModal(popupTypeImage,closeModal);
+  openModal(popupTypeNewCard, handleCloseByClick, handleCloseByEsc);
 });

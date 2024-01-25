@@ -1,18 +1,31 @@
 // @todo: Экспортируемые функции
-export {openModal, closeModal};
+export {openModal, closeModal, handleCloseByClick, handleCloseByEsc};
+
+let popupOpen;
 
 // @todo: Функция открытия popup
-function openModal(popup, callbackClose) {
+function openModal(popup, callbackCloseByClick, callbackCloseByEsc) {
   popup.classList.add('popup_is-opened');
-  popup.addEventListener('click', callbackClose);
-  document.addEventListener('keydown', callbackClose);
+  popupOpen = popup;
+  popup.addEventListener('click', callbackCloseByClick);
+  document.addEventListener('keydown', callbackCloseByEsc);
 };
 
 // @todo: Функция закрытия popup
-function closeModal(evt) {
-  const popup = document.querySelector('.popup_is-opened');
-  if (evt.target === popup || evt.target.className === 'popup__close' || evt.key === 'Escape' || evt.target.className === 'button popup__button') {
+function closeModal(popup) {
     popup.classList.remove('popup_is-opened');
-  };
-  document.removeEventListener('keydown', closeModal);
+    popup.removeEventListener('click', handleCloseByClick);
+    document.removeEventListener('keydown', handleCloseByEsc);
 };
+
+function handleCloseByEsc(evt) {
+  if (evt.key === 'Escape') {
+    closeModal(popupOpen);
+  }
+};
+
+function handleCloseByClick(evt) {
+  if (evt.target === popupOpen || evt.target.className === 'popup__close' || evt.target.className === 'button popup__button') {
+    closeModal(popupOpen);
+  };
+}
