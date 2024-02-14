@@ -1,49 +1,42 @@
 const config = {
-  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-6/cards',
+  baseUrl: 'https://nomoreparties.co/v1/',
+  groupName: 'wff-cohort-6',
   headers: {
     authorization: '593ec951-2f3c-459c-800a-b2838867b518',
     'Content-Type': 'application/json'
   }
 }
 
-export const getInitialCards = (renderCard) => {
-    return fetch(config.baseUrl, {
+export const getInitialCards = () => {
+    return fetch(config.baseUrl + config.groupName + '/cards', {
       headers: {
         authorization: config.headers.authorization,
       }
     })
-    .then(res => res.json())
-    .then((result) => {
-      result.forEach((card) => {
-        renderCard(card, config.userId);
-      });
-    })
-    .catch(() => {
-      console.log('Ошибка. Запрос не выполнен');
-    }); 
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
+    });
 }
 
-// export const getUser = (profileTitle, profileDescription, profileImage) => {
-export const getUser = (profileTitle, profileDescription, profileImage) => {
-    return fetch('https://nomoreparties.co/v1/wff-cohort-6/users/me', {
+export const getUser = () => {
+    return fetch(config.baseUrl + config.groupName + '/users/me', {
       headers: {
         authorization: config.headers.authorization
       }
     })
-    .then(res => res.json())
-    .then((result) => {
-      config.userId = result._id
-      profileTitle.textContent = result.name;
-      profileDescription.textContent = result.about;
-      profileImage.style.cssText = 'background-image: url(' + result.avatar + ')';
-    })
-    .catch(() => {
-      console.log('Ошибка. Запрос не выполнен');
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
     });
 } 
 
-export const setUser = (name, about, profileTitle, profileDescription) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-6/users/me', {
+export const setUser = (name, about) => {
+  return fetch(config.baseUrl + config.groupName + '/users/me', {
     method: 'PATCH',
     headers: {
       authorization: config.headers.authorization,
@@ -54,94 +47,90 @@ export const setUser = (name, about, profileTitle, profileDescription) => {
       about: about.value
     })
   })
-  .then(res => res.json())
-  .then((result) => {
-    profileTitle.textContent = result.name;
-    profileDescription.textContent = result.about;
-  })
-  .catch(() => {
-    console.log('Ошибка. Запрос не выполнен');
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
   });
 }
 
 export const setCard = (name, link) => {
-  return fetch(config.baseUrl, {
+  return fetch(config.baseUrl + config.groupName + '/cards', {
     method: 'POST',
     headers: {
       authorization: config.headers.authorization,
       'Content-Type': config.headers["Content-Type"]
     },
     body: JSON.stringify({
-      name: name,
-      link: link
+      name,
+      link
     })
   })
-  .then(res => res.json())
-  .then((result) => {
-    console.log(name)
-    console.log(link)
-    console.log(result)
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
   })
-  .catch(() => {
-    console.log('Ошибка. Запрос не выполнен');
+  .catch((err) => {
+    console.log(err); // выводим ошибку в консоль
   });
 } 
 
-export const delCard = (id) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-6/cards/' + id, {
+export const deleteCardRequest = (id) => {
+  return fetch(config.baseUrl + config.groupName + '/cards/' + id, {
     method: 'DELETE',
     headers: {
       authorization: config.headers.authorization,
       'Content-Type': config.headers["Content-Type"]
     }
   })
-  .then(res => res.json())
-  .then((result) => {
-    console.log(result)
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
   })
-  .catch(() => {
-    console.log('Ошибка. Запрос не выполнен');
+  .catch((err) => {
+    console.log(err); // выводим ошибку в консоль
   });
 }
 
-export const setLike = (evt, id) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-6/cards/likes/' + id, {
+export const setLike = (id) => {
+  return fetch(config.baseUrl + config.groupName + '/cards/likes/' + id, {
     method: 'PUT',
     headers: {
       authorization: config.headers.authorization,
       'Content-Type': config.headers["Content-Type"]
     }
   })
-  .then(res => res.json())
-  .then((result) => {
-    evt.target.classList.add('card__like-button_is-active');
-    evt.target.textContent = result.likes.length;
-  })
-  .catch(() => {
-    console.log('Ошибка. Запрос не выполнен');
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
   });
 } 
 
-export const deleteLike = (evt, id) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-6/cards/likes/' + id, {
+export const deleteLike = (id) => {
+  return fetch(config.baseUrl + config.groupName + '/cards/likes/' + id, {
     method: 'DELETE',
     headers: {
       authorization: config.headers.authorization,
       'Content-Type': config.headers["Content-Type"]
     }
   })
-  .then(res => res.json())
-  .then((result) => {
-    evt.target.classList.remove('card__like-button_is-active');
-    evt.target.textContent = result.likes.length;
-  })
-  .catch(() => {
-    console.log('Ошибка. Запрос не выполнен');
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
   });
 }
  
-export const setAvatar = (src, profileImage) => {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-6/users/me/avatar', {
+export const setAvatar = (src) => {
+  return fetch(config.baseUrl + config.groupName + '/users/me/avatar', {
     method: 'PATCH',
     headers: {
       authorization: config.headers.authorization,
@@ -151,11 +140,10 @@ export const setAvatar = (src, profileImage) => {
       avatar: src,
     })
   })
-  .then(res => res.json())
-  .then((result) => {
-    profileImage.style.cssText = 'background-image: url(' + result.avatar + ')';
-  })
-  .catch(() => {
-    console.log('Ошибка. Запрос не выполнен');
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
   });
 } 

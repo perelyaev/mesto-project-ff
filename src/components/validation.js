@@ -16,9 +16,9 @@ function setEventListeners (form, validationConfig) {
   const inputList = Array.from(form.querySelectorAll(validationConfig.inputSelector));
   const submitButton = form.querySelector(validationConfig.submitButtonSelector);
 
+  toggleButtonState(inputList, submitButton, validationConfig);
   inputList.forEach((input) => {
-    toggleButtonState(inputList, submitButton, validationConfig);
-    input.addEventListener('input', () => {
+    input.addEventListener('input', (evt) => {
       isValid(form, input, validationConfig);
       toggleButtonState(inputList, submitButton, validationConfig);
     });

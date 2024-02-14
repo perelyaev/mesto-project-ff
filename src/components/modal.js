@@ -1,31 +1,34 @@
 // @todo: Экспортируемые функции
-export {openModal, closeModal, handleCloseByClick, handleCloseByEsc};
-
-let popupOpen;
+export {openModal, closeModal, handleCloseByClick, handleCloseByEsc, setCloseModalOnClickListeners};
 
 // @todo: Функция открытия popup
-function openModal(popup, callbackCloseByClick, callbackCloseByEsc) {
+function openModal(popup) {
   popup.classList.add('popup_is-opened');
-  popupOpen = popup;
-  popup.addEventListener('click', callbackCloseByClick);
-  document.addEventListener('keydown', callbackCloseByEsc);
+  document.addEventListener('keydown', handleCloseByEsc);
 };
 
 // @todo: Функция закрытия popup
 function closeModal(popup) {
     popup.classList.remove('popup_is-opened');
-    popup.removeEventListener('click', handleCloseByClick);
     document.removeEventListener('keydown', handleCloseByEsc);
 };
 
 function handleCloseByEsc(evt) {
+  const popup = document.querySelector('.popup_is-opened')
   if (evt.key === 'Escape') {
-    closeModal(popupOpen);
+    closeModal(popup);
   }
 };
 
 function handleCloseByClick(evt) {
-  if (evt.target === popupOpen || evt.target.className === 'popup__close' || evt.target.className === 'button popup__button') {
-    closeModal(popupOpen);
+  if (evt.target === evt.currentTarget || evt.target.classList.contains('popup__close') || evt.target.classList.contains('button popup__button')) {
+    closeModal(evt.currentTarget);
   };
+}
+
+// Устанавливаем обрабочик OnClick на popup
+function setCloseModalOnClickListeners(popups) {
+  popups.forEach((popup) => {
+    popup.addEventListener('click', handleCloseByClick)
+  })
 }
