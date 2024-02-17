@@ -7,18 +7,20 @@ const config = {
   }
 }
 
+function checkResponse(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
+} 
+
 export const getInitialCards = () => {
     return fetch(config.baseUrl + config.groupName + '/cards', {
       headers: {
         authorization: config.headers.authorization,
       }
     })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-    });
+    .then(res => checkResponse(res));
 }
 
 export const getUser = () => {
@@ -27,12 +29,7 @@ export const getUser = () => {
         authorization: config.headers.authorization
       }
     })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-    });
+    .then(res => checkResponse(res));
 } 
 
 export const setUser = (name, about) => {
@@ -43,16 +40,11 @@ export const setUser = (name, about) => {
       'Content-Type': config.headers["Content-Type"]
     },
     body: JSON.stringify({
-      name: name.value,
-      about: about.value
+      name,
+      about
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-  });
+  .then(res => checkResponse(res));
 }
 
 export const setCard = (name, link) => {
@@ -67,15 +59,7 @@ export const setCard = (name, link) => {
       link
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-  })
-  .catch((err) => {
-    console.log(err); // выводим ошибку в консоль
-  });
+  .then(res => checkResponse(res));
 } 
 
 export const deleteCardRequest = (id) => {
@@ -86,15 +70,7 @@ export const deleteCardRequest = (id) => {
       'Content-Type': config.headers["Content-Type"]
     }
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-  })
-  .catch((err) => {
-    console.log(err); // выводим ошибку в консоль
-  });
+  .then(res => checkResponse(res));
 }
 
 export const setLike = (id) => {
@@ -105,12 +81,7 @@ export const setLike = (id) => {
       'Content-Type': config.headers["Content-Type"]
     }
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-  });
+  .then(res => checkResponse(res));
 } 
 
 export const deleteLike = (id) => {
@@ -121,12 +92,7 @@ export const deleteLike = (id) => {
       'Content-Type': config.headers["Content-Type"]
     }
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-  });
+  .then(res => checkResponse(res));
 }
  
 export const setAvatar = (src) => {
@@ -140,10 +106,5 @@ export const setAvatar = (src) => {
       avatar: src,
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`); // если ошибка, отклоняем промис
-  });
+  .then(res => checkResponse(res));
 } 

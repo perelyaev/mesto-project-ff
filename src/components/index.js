@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import {createCard, likeCard} from './card.js';
+import {createCard, toggleLike} from './card.js';
 import {openModal, closeModal, handleCloseByClick, handleCloseByEsc, setCloseModalOnClickListeners} from './modal.js';
 import {enableValidation, clearValidation} from './validation.js';
 import {getInitialCards, getUser, setUser, setCard, deleteCardRequest, setLike, deleteLike, setAvatar} from './api.js';
@@ -22,9 +22,6 @@ const popups = document.querySelectorAll('.popup')
 const popupTypeEditAvatar = document.querySelector('.popup_type_edit-avatar');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 const popupTypeNewCard = document.querySelector('.popup_type_new-card');
-// const formAdd = document.querySelector('.new-place');
-// const inputNameFormAdd = formAdd.querySelector('popup__input_type_card-name');
-// const inputLinkFormAdd = formAdd.querySelector('popup__input_type_url');
 const popupTypeImage = document.querySelector('.popup_type_image');
 const popupImage = document.querySelector('.popup__image');
 const popupCaption = document.querySelector('.popup__caption');
@@ -36,17 +33,18 @@ const formEdit = document.forms.namedItem('edit-profile');
 const formEditAvatar = document.forms.namedItem('edit-avatar');
 const buttonEdit = document.querySelector('.profile__edit-button');
 const buttonAdd = document.querySelector('.profile__add-button');
+const buttonSubmit = formEdit.querySelector('.popup__button');
 
 let userId;
 
-formEdit.addEventListener('submit',(evt) => {
+function editUser(evt) {
   evt.preventDefault();
-  const buttonSubmit = formEdit.querySelector('.popup__button');
   buttonSubmit.textContent = 'Сохранение...';
-  setUser(formEdit.elements.name, formEdit.elements.description)
+  setUser(formEdit.elements.name.value, formEdit.elements.description.value)
     .then((user) => {
       profileTitle.textContent = user.name;
       profileDescription.textContent = user.about;
+      closeModal(popupTypeEdit);
     })
     .catch((err) => {
       console.log(err); // выводим ошибку в консоль
@@ -54,44 +52,49 @@ formEdit.addEventListener('submit',(evt) => {
     .finally(()=> {
       buttonSubmit.textContent = 'Сохранить';
     });
-});
+}
 
-formAdd.addEventListener('submit',(evt) => {
+formEdit.addEventListener('submit',(evt) => editUser(evt));
+
+function addCard(evt) {
   evt.preventDefault();
-  const buttonSubmit = formAdd.querySelector('.popup__button');
   buttonSubmit.textContent = 'Сохранение...';
   setCard(formAdd.elements['place-name'].value, formAdd.elements.link.value)
     .then(card => {
-      renderCard(card,userId)
+      renderCard(card,userId);
+      formAdd.reset();
+      clearValidation(formAdd, validationConfig);
+      closeModal(popupTypeNewCard);
     })
     .catch((err) => {
       console.log(err); // выводим ошибку в консоль
     })
     .finally(()=> {
       buttonSubmit.textContent = 'Сохранить';
-      formAdd.reset();
-      clearValidation(formAdd, validationConfig);
     });
-    
-})
+}
 
-formEditAvatar.addEventListener('submit',(evt) => {
+formAdd.addEventListener('submit',(evt) => addCard(evt));
+
+function editAvatar(evt) {
   evt.preventDefault();
-  const buttonSubmit = formEditAvatar.querySelector('.popup__button');
   buttonSubmit.textContent = 'Сохранение...';
   setAvatar(formEditAvatar.elements.link.value)
     .then((user) => {
-      profileImage.style.cssText = 'background-image: url(' + user.avatar + ')';
+      profileImage.style.backgroundImage = 'url(' + user.avatar + ')';
+      formEditAvatar.reset();
+      clearValidation(formEditAvatar, validationConfig);
+      closeModal(popupTypeEditAvatar);
     })
     .catch((err) => {
       console.log(err); // выводим ошибку в консоль
     })
     .finally(()=> {
       buttonSubmit.textContent = 'Сохранить';
-      formEditAvatar.reset();
-      clearValidation(formEditAvatar, validationConfig);
     });
-})
+}
+
+formEditAvatar.addEventListener('submit',(evt) => editAvatar(evt));
 
 // @todo: Функция обрабатывающая событие клика по изображению
 function openImagePopup(link, name) {
@@ -101,12 +104,12 @@ function openImagePopup(link, name) {
   popupCaption.textContent = name;
 };
 
-function handleOnLike (cardId, buttonLikeElement) {
-  if (buttonLikeElement.classList.contains('card__like-button_is-active')) {
+function handleOnLike (cardId, buttonLikeElement, isLiked) {
+  if (isLiked) {
     deleteLike(cardId)
       .then((result) => {
-        buttonLikeElement.classList.remove('card__like-button_is-active');
-        buttonLikeElement.textContent = result.likes.length;
+        toggleLike(buttonLikeElement, isLiked, result.likes.length)
+        return false;
       })
       .catch((err) => {
         console.log(err); // выводим ошибку в консоль
@@ -114,8 +117,8 @@ function handleOnLike (cardId, buttonLikeElement) {
   } else {
     setLike(cardId)
       .then((result) => {
-        buttonLikeElement.classList.add('card__like-button_is-active');
-        buttonLikeElement.textContent = result.likes.length;
+        toggleLike(buttonLikeElement, isLiked, result.likes.length)
+        return true
       })
       .catch((err) => {
         console.log(err); // выводим ошибку в консоль
@@ -124,14 +127,19 @@ function handleOnLike (cardId, buttonLikeElement) {
 }
 
 function deleteCard (cardId, cardElement) {
-  deleteCardRequest(cardId);
-  cardElement.remove();
+  deleteCardRequest(cardId)
+    .then((result) => {
+      cardElement.remove();
+    })
+    .catch((err) => {
+      console.log(err); // выводим ошибку в консоль
+    });
 } 
 
 // @todo: Создать карточку
 function renderCard(card, autor) {
   const cardId = createCard(cardTemplate, card, autor, deleteCard, handleOnLike, openImagePopup);
-  cardsContainer.prepend(cardId);
+  cardsContainer.append(cardId);
 }
 
 profileImage.addEventListener('click', () => {
@@ -158,7 +166,7 @@ Promise.all([getUser(), getInitialCards()])
     userId = user._id
     profileTitle.textContent = user.name;
     profileDescription.textContent = user.about;
-    profileImage.style.cssText = 'background-image: url(' + user.avatar + ')';
+    profileImage.style.backgroundImage = 'url(' + user.avatar + ')';
     cards.forEach((card) => {
       renderCard(card, userId);
     });

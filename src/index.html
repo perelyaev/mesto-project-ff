@@ -42,7 +42,8 @@
           type="text" 
           name="name" 
           class="popup__input popup__input_type_name" 
-          placeholder="Имя" 
+          placeholder="Имя"
+          autocomplete="on" 
           minlength="2" 
           maxlength="40" 
           pattern="^[a-zA-Zа-яА-ЯёЁ\-\s]+$"
@@ -54,7 +55,8 @@
           type="text" 
           name="description" 
           class="popup__input popup__input_type_description" 
-          placeholder="Занятие" 
+          placeholder="Занятие"
+          autocomplete="off" 
           minlength="2" 
           maxlength="200" 
           pattern="^[a-zA-Zа-яА-ЯёЁ\-\s]+$"
@@ -76,6 +78,7 @@
           name="place-name" 
           class="popup__input popup__input_type_card-name" 
           placeholder="Название"
+          autocomplete="on"
           minlength="2" 
           maxlength="30" 
           pattern="^[a-zA-Zа-яА-ЯёЁ\-\s]+$"
@@ -88,6 +91,7 @@
           name="link" 
           class="popup__input popup__input_type_url" 
           placeholder="Ссылка на картинку" 
+          autocomplete="off"
           required>
         <span class="link-new-place-error popup__input-error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
@@ -112,6 +116,7 @@
           name="link" 
           class="popup__input popup__input_type_url" 
           placeholder="Ссылка на картинку" 
+          autocomplete="off"
           required>
         <span class="link-new-place-error popup__input-error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>

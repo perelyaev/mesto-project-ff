@@ -21,7 +21,7 @@ function handleCloseByEsc(evt) {
 };
 
 function handleCloseByClick(evt) {
-  if (evt.target === evt.currentTarget || evt.target.classList.contains('popup__close') || evt.target.classList.contains('button popup__button')) {
+  if (evt.target === evt.currentTarget || evt.target.classList.contains('popup__close')) {
     closeModal(evt.currentTarget);
   };
 }
