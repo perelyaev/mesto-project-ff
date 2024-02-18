@@ -33,13 +33,15 @@ const formEdit = document.forms.namedItem('edit-profile');
 const formEditAvatar = document.forms.namedItem('edit-avatar');
 const buttonEdit = document.querySelector('.profile__edit-button');
 const buttonAdd = document.querySelector('.profile__add-button');
-const buttonSubmit = formEdit.querySelector('.popup__button');
+const profileFormSubmitButton = formEdit.querySelector('.popup__button');
+const cardFormSubmitButton = formAdd.querySelector('.popup__button');
+const avatarFormSubmitButton = formEditAvatar.querySelector('.popup__button');
 
 let userId;
 
-function editUser(evt) {
+function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  buttonSubmit.textContent = 'Сохранение...';
+  profileFormSubmitButton.textContent = 'Сохранение...';
   setUser(formEdit.elements.name.value, formEdit.elements.description.value)
     .then((user) => {
       profileTitle.textContent = user.name;
@@ -50,18 +52,19 @@ function editUser(evt) {
       console.log(err); // выводим ошибку в консоль
     })
     .finally(()=> {
-      buttonSubmit.textContent = 'Сохранить';
+      profileFormSubmitButton.textContent = 'Сохранить';
     });
 }
 
-formEdit.addEventListener('submit',(evt) => editUser(evt));
+formEdit.addEventListener('submit',(evt) => handleProfileFormSubmit(evt));
 
-function addCard(evt) {
+function handleCardFormSubmit(evt) {
   evt.preventDefault();
-  buttonSubmit.textContent = 'Сохранение...';
+  cardFormSubmitButton.textContent = 'Сохранение...';
   setCard(formAdd.elements['place-name'].value, formAdd.elements.link.value)
     .then(card => {
-      renderCard(card,userId);
+      const cardId = createCard(cardTemplate, card, userId, deleteCard, handleOnLike, openImagePopup); 
+      cardsContainer.prepend(cardId);  
       formAdd.reset();
       clearValidation(formAdd, validationConfig);
       closeModal(popupTypeNewCard);
@@ -70,15 +73,15 @@ function addCard(evt) {
       console.log(err); // выводим ошибку в консоль
     })
     .finally(()=> {
-      buttonSubmit.textContent = 'Сохранить';
+      cardFormSubmitButton.textContent = 'Сохранить';
     });
 }
 
-formAdd.addEventListener('submit',(evt) => addCard(evt));
+formAdd.addEventListener('submit',(evt) => handleCardFormSubmit(evt));
 
-function editAvatar(evt) {
+function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
-  buttonSubmit.textContent = 'Сохранение...';
+  avatarFormSubmitButton.textContent = 'Сохранение...';
   setAvatar(formEditAvatar.elements.link.value)
     .then((user) => {
       profileImage.style.backgroundImage = 'url(' + user.avatar + ')';
@@ -90,11 +93,11 @@ function editAvatar(evt) {
       console.log(err); // выводим ошибку в консоль
     })
     .finally(()=> {
-      buttonSubmit.textContent = 'Сохранить';
+      avatarFormSubmitButton.textContent = 'Сохранить';
     });
 }
 
-formEditAvatar.addEventListener('submit',(evt) => editAvatar(evt));
+formEditAvatar.addEventListener('submit',(evt) => handleAvatarFormSubmit(evt));
 
 // @todo: Функция обрабатывающая событие клика по изображению
 function openImagePopup(link, name) {
@@ -109,7 +112,6 @@ function handleOnLike (cardId, buttonLikeElement, isLiked) {
     deleteLike(cardId)
       .then((result) => {
         toggleLike(buttonLikeElement, isLiked, result.likes.length)
-        return false;
       })
       .catch((err) => {
         console.log(err); // выводим ошибку в консоль
@@ -118,7 +120,6 @@ function handleOnLike (cardId, buttonLikeElement, isLiked) {
     setLike(cardId)
       .then((result) => {
         toggleLike(buttonLikeElement, isLiked, result.likes.length)
-        return true
       })
       .catch((err) => {
         console.log(err); // выводим ошибку в консоль

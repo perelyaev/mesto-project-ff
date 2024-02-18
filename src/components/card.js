@@ -11,25 +11,29 @@ function createCard(template, card, autor, callbackDelete, onLikeCard, callbackI
   const cardTitle = cardItem.querySelector('.card__title');
   cardImage.src = card.link;
   cardImage.alt = card.name;
-  // cardLikeButton.textContent = card.likes.length;
+  cardLikeButton.textContent = card.likes.length;
   cardTitle.textContent = card.name;
   if (autor != card.owner._id) {
     cardDeleteButton.disabled = true;
     cardDeleteButton.hidden = true;
   }
   const isLiked = card.likes.some((like) => autor === like._id);
-  cardLikeButton.classList.toggle('card__like-button_is-active');
-  toggleLike(cardLikeButton,isLiked, card.likes.length);
+  if (isLiked) {
+    cardLikeButton.classList.add('card__like-button_is-active');
+  }
 
   cardDeleteButton.addEventListener('click', () => callbackDelete(card._id, cardElement));
-  cardLikeButton.addEventListener('click', (evt) => onLikeCard(card._id, evt.target, 
-    evt.target.classList.contains('card__like-button_is-active')))
+  cardLikeButton.addEventListener('click', (evt) => onLikeCard(card._id, evt.target, evt.target.classList.contains('card__like-button_is-active')))
   cardImage.addEventListener('click', () => callbackImage(card.link, card.name));
   return cardItem;
   
 };
 
-function toggleLike(buttonLikeElement, isLiked, toggle) {
-  buttonLikeElement.classList.toggle('card__like-button_is-active');
-  buttonLikeElement.textContent = toggle;
+function toggleLike(buttonLikeElement, isLiked, likesCount) {
+  if (!isLiked) {
+    buttonLikeElement.classList.add('card__like-button_is-active');
+  } else {
+    buttonLikeElement.classList.remove('card__like-button_is-active');
+  }
+  buttonLikeElement.textContent = likesCount;
 }
